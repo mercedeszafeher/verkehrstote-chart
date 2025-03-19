@@ -60,5 +60,13 @@ The design automatically adjusts to different screen sizes—from mobile to larg
 ## Screenshots
 
 ### Home Page (Multi-Year Line Chart)
+![Screenshot 2025-03-19 at 15 59 27](https://github.com/user-attachments/assets/0366811d-27a2-4b6e-a6e0-5f58ef97862b)
 
-### Single-Year View (Bar Chart)
+### Bundesland (Multi-Year Line Chart)
+![Screenshot 2025-03-19 at 15 59 39](https://github.com/user-attachments/assets/481b7faf-6b7c-46ac-ae46-fdc07199f471)
+
+### Single-Year View (Bar Chart for all Bundesland)
+![Screenshot 2025-03-19 at 15 59 15](https://github.com/user-attachments/assets/0ff1d964-b6a3-4a5a-a284-789a2acfc1b3)
+
+### Single-Year View (Bar Chart for only one Bundesland)
+![Screenshot 2025-03-19 at 15 59 49](https://github.com/user-attachments/assets/878096a2-6843-41b7-87f5-951d5afb772d)
