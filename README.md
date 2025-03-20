@@ -25,8 +25,7 @@ Additionally, when a single year is selected, a **"Statistik nach:"** dropdown l
   An extra “Statistik nach:” dropdown allows grouping of the single-year data by Monat, Geschlecht, Gebiet, Alter, Bundesland, or Jahr.
 - **Data Transformation:**  
   An internal API route converts raw API values into human‑readable formats:
-  - Bundesland, Gebiet mappings.
-  - `AlterGr_ID` is mapped as follows: IDs 1–16 map to age ranges (e.g. "0-4", "5-9", …, "70-74", with ID 16 being "75+"), ID 17 becomes “nicht geboren”, and ID 18 becomes “unbekannt.”
+  - Bundesland, Gebiet and Alter Gruppe.
 - **Consistent and Randomized Colors:**  
   The dashboard uses a fixed color map for line charts and a separate utility for generating random blue shades for bar charts.
 - **Responsive Design:**  
