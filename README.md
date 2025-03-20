@@ -60,13 +60,19 @@ The design automatically adjusts to different screen sizes—from mobile to larg
 ## Screenshots
 
 ### Home Page (Multi-Year Line Chart)
-![Screenshot 2025-03-19 at 15 59 27](https://github.com/user-attachments/assets/0366811d-27a2-4b6e-a6e0-5f58ef97862b)
+![Screenshot 2025-03-20 at 16 12 53](https://github.com/user-attachments/assets/dc3456a4-1f80-4872-91aa-d20d31d52207)
 
 ### Bundesland (Multi-Year Line Chart)
-![Screenshot 2025-03-19 at 15 59 39](https://github.com/user-attachments/assets/481b7faf-6b7c-46ac-ae46-fdc07199f471)
+![Screenshot 2025-03-20 at 16 13 21](https://github.com/user-attachments/assets/e1299092-a7ee-4e68-b79f-50ae042e8317)
+
 
 ### Single-Year View (Bar Chart for all Bundesland)
-![Screenshot 2025-03-19 at 15 59 15](https://github.com/user-attachments/assets/0ff1d964-b6a3-4a5a-a284-789a2acfc1b3)
+![Screenshot 2025-03-20 at 17 34 46](https://github.com/user-attachments/assets/302fde8e-2954-456c-be41-66f4ed23130c)
+
 
 ### Single-Year View (Bar Chart for only one Bundesland)
-![Screenshot 2025-03-19 at 15 59 49](https://github.com/user-attachments/assets/878096a2-6843-41b7-87f5-951d5afb772d)
+![Screenshot 2025-03-20 at 17 36 26](https://github.com/user-attachments/assets/d9431661-a846-4dfd-bb5b-279f71da42bc)
+
+### Monthly-View for given Year (Bar Chart  for only one Bundesland )
+![Screenshot 2025-03-20 at 17 36 59](https://github.com/user-attachments/assets/1ea0315c-1840-49e0-8584-fe6ec2b325d2)
+
