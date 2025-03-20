@@ -15,8 +15,12 @@ interface RawTrafficData {
 }
 
 export interface TrafficData {
-  Bundesland: string;
   Jahr: number;
+  Monat: number;
+  Geschlecht: string;
+  Bundesland: string;
+  Gebiet: string;
+  AlterGr: string;
   Getotete: number;
 }
 
@@ -32,6 +36,41 @@ const bundeslandMapping: { [key: string]: string } = {
   '9': 'Wien',
 };
 
+const gebietMapping: Record<string, string> = {
+  '0': 'Freiland',
+  '1': 'Autobahn',
+  '2': 'Autobahn',
+};
+
+const alterGroupMapping: Record<string, string> = {
+  '1': '0-4',
+  '2': '5-9',
+  '3': '10-14',
+  '4': '15-19',
+  '5': '20-24',
+  '6': '25-29',
+  '7': '30-34',
+  '8': '35-39',
+  '9': '40-44',
+  '10': '45-49',
+  '11': '50-54',
+  '12': '55-59',
+  '13': '60-64',
+  '14': '65-69',
+  '15': '70-74',
+  '16': '75+',
+  '17': 'nicht geboren',
+  '18': 'unbekannt',
+};
+
+function mapGeschlecht(id: string): string {
+  return id === '1' ? 'Männlich' : id === '2' ? 'Weiblich' : 'Unbekannt';
+}
+
+function mapAlterGroup(id: string): string {
+  return alterGroupMapping[id] || 'Unbekannt';
+}
+
 export async function GET() {
   const API_URL = 'https://dashboards.kfv.at/api/udm_verkehrstote/json';
 
@@ -45,8 +84,12 @@ export async function GET() {
     }
 
     const result: TrafficData[] = rawArray.map((item) => ({
-      Bundesland: bundeslandMapping[item.Bundesland_ID] || item.Bundesland_ID,
       Jahr: parseInt(item.Berichtsjahr, 10),
+      Monat: parseInt(item.Monat_ID, 10),
+      Geschlecht: mapGeschlecht(item.Geschlecht_ID),
+      Bundesland: bundeslandMapping[item.Bundesland_ID] || item.Bundesland_ID,
+      Gebiet: gebietMapping[item.Gebiet_ID] || item.Gebiet_ID,
+      AlterGr: mapAlterGroup(item.AlterGr_ID),
       Getotete: parseInt(item.Getötete, 10),
     }));
 

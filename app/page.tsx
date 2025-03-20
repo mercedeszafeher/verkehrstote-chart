@@ -14,10 +14,10 @@ import {
 } from 'chart.js';
 import React, { useEffect, useState } from 'react';
 import { Bar, Line } from 'react-chartjs-2';
+import { getRandomBlueShade } from '../src/utils/colors';
 import styles from '../styles/Home.module.scss';
 import { TrafficData } from './api/traffic/route';
 
-// Register Chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -47,11 +47,25 @@ function getRegionColor(region: string): string {
   return colorMap[region] || '#999999';
 }
 
+const displayDimensions = [
+  'Bundesland',
+  'Jahr',
+  'Monat',
+  'Geschlecht',
+  'Gebiet',
+  'Alter',
+];
+
 export default function HomePage() {
   const [rawData, setRawData] = useState<TrafficData[]>([]);
   const [bundeslandFilter, setBundeslandFilter] = useState<string>('');
   const [yearFilter, setYearFilter] = useState<string>('');
   const [allYears, setAllYears] = useState<number[]>([]);
+  const [geschlechtFilter, setGeschlechtFilter] = useState<string>('');
+  const [gebietFilter, setGebietFilter] = useState<string>('');
+  const [alterGrFilter, setAlterGrFilter] = useState<string>('');
+  const [displayDimension, setDisplayDimension] =
+    useState<string>('Bundesland');
 
   useEffect(() => {
     async function fetchData() {
@@ -75,26 +89,78 @@ export default function HomePage() {
   const filteredData = rawData.filter((item) => {
     if (bundeslandFilter && item.Bundesland !== bundeslandFilter) return false;
     if (yearFilter && item.Jahr !== parseInt(yearFilter, 10)) return false;
+    if (geschlechtFilter && item.Geschlecht !== geschlechtFilter) return false;
+    if (gebietFilter && item.Gebiet !== gebietFilter) return false;
+    if (alterGrFilter && item.AlterGr !== alterGrFilter) return false;
     return true;
   });
 
   const isBarChart = Boolean(yearFilter);
 
-  function getBarChartData(): ChartData<'bar', number[], unknown> {
-    const regions = Array.from(new Set(filteredData.map((d) => d.Bundesland)));
-    const labels: string[] = regions;
-    const dataPoints: number[] = regions.map((region) =>
-      filteredData.reduce(
-        (sum, item) => (item.Bundesland === region ? sum + item.Getotete : sum),
-        0,
-      ),
+  let finalDimension = displayDimension;
+  if (yearFilter && !bundeslandFilter) {
+    finalDimension = 'Bundesland';
+  }
+
+  function getGroupValue(
+    item: TrafficData,
+    dimension: string,
+  ): string | number {
+    switch (dimension) {
+      case 'Bundesland':
+        return item.Bundesland;
+      case 'Jahr':
+        return item.Jahr;
+      case 'Monat':
+        return item.Monat;
+      case 'Geschlecht':
+        return item.Geschlecht;
+      case 'Gebiet':
+        return item.Gebiet;
+      case 'Alter':
+        return item.AlterGr;
+      default:
+        return '';
+    }
+  }
+
+  function getBarChartDataByDimension(): ChartData<'bar', number[], unknown> {
+    let groups = Array.from(
+      new Set(filteredData.map((item) => getGroupValue(item, finalDimension))),
     );
-    const backgroundColors = regions.map((region) => getRegionColor(region));
+
+    if (finalDimension === 'Monat' || finalDimension === 'Jahr') {
+      groups = groups.sort((a, b) => (a as number) - (b as number));
+    } else {
+      groups = groups.sort();
+    }
+
+    const labels =
+      finalDimension === 'Monat' || finalDimension === 'Jahr'
+        ? groups.map((m) => {
+            if (finalDimension === 'Monat') {
+              const date = new Date(0, Number(m) - 1);
+              return date.toLocaleString('de-DE', { month: 'short' });
+            }
+            return String(m);
+          })
+        : (groups as string[]);
+
+    const dataPoints = groups.map((grp) =>
+      filteredData.reduce((sum, item) => {
+        return getGroupValue(item, displayDimension) === grp
+          ? sum + item.Getotete
+          : sum;
+      }, 0),
+    );
+
+    const backgroundColors = groups.map(() => getRandomBlueShade());
+
     return {
       labels,
       datasets: [
         {
-          label: `Verkehrstote im Jahr ${yearFilter}`,
+          label: `Verkehrstote im Jahr ${yearFilter} (nach ${displayDimension})`,
           data: dataPoints,
           backgroundColor: backgroundColors,
         },
@@ -132,6 +198,11 @@ export default function HomePage() {
     };
   }
 
+  const barChartData: ChartData<'bar', number[], unknown> =
+    getBarChartDataByDimension();
+  const lineChartData: ChartData<'line', number[], unknown> =
+    getLineChartData();
+
   const lineOptions = {
     responsive: true,
     plugins: {
@@ -156,7 +227,7 @@ export default function HomePage() {
     plugins: {
       title: {
         display: true,
-        text: `Verkehrstote im Jahr ${yearFilter}`,
+        text: `Verkehrstote im Jahr ${yearFilter} nach ${displayDimension}`,
       },
     },
     scales: {
@@ -165,7 +236,7 @@ export default function HomePage() {
         title: { display: true, text: 'Anzahl Getötete' },
       },
       x: {
-        title: { display: true, text: 'Bundesland' },
+        title: { display: true, text: displayDimension },
       },
     },
   };
@@ -206,12 +277,76 @@ export default function HomePage() {
             ))}
           </select>
         </div>
+        <div className={styles.filterGroup}>
+          <label>Geschlecht:</label>
+          <select
+            value={geschlechtFilter}
+            onChange={(e) => setGeschlechtFilter(e.target.value)}
+          >
+            <option value="">Alle</option>
+            <option value="Männlich">Männlich</option>
+            <option value="Weiblich">Weiblich</option>
+          </select>
+        </div>
+        <div className={styles.filterGroup}>
+          <label>Gebiet:</label>
+          <select
+            value={gebietFilter}
+            onChange={(e) => setGebietFilter(e.target.value)}
+          >
+            <option value="">Alle</option>
+            <option value="Freiland">Freiland</option>
+            <option value="Autobahn">Autobahn</option>
+          </select>
+        </div>
+        <div className={styles.filterGroup}>
+          <label>Altergruppe:</label>
+          <select
+            value={alterGrFilter}
+            onChange={(e) => setAlterGrFilter(e.target.value)}
+          >
+            <option value="">Alle</option>
+            <option value="0-4">0-4</option>
+            <option value="5-9">5-9</option>
+            <option value="10-14">10-14</option>
+            <option value="15-19">15-19</option>
+            <option value="20-24">20-24</option>
+            <option value="25-29">25-29</option>
+            <option value="30-34">30-34</option>
+            <option value="35-39">35-39</option>
+            <option value="40-44">40-44</option>
+            <option value="45-49">45-49</option>
+            <option value="50-54">50-54</option>
+            <option value="55-59">55-59</option>
+            <option value="60-64">60-64</option>
+            <option value="65-69">65-69</option>
+            <option value="70-74">70-74</option>
+            <option value="75+">75+</option>
+            <option value="nicht geboren">nicht geboren</option>
+            <option value="unbekannt">unbekannt</option>
+          </select>
+        </div>
+        {isBarChart && (
+          <div className={styles.filterGroup}>
+            <label>Statistik nach:</label>
+            <select
+              value={displayDimension}
+              onChange={(e) => setDisplayDimension(e.target.value)}
+            >
+              {displayDimensions.map((dim) => (
+                <option key={dim} value={dim}>
+                  {dim}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
       <div className={styles.chartContainer}>
         {isBarChart ? (
-          <Bar data={getBarChartData()} options={barOptions} />
+          <Bar data={barChartData} options={barOptions} />
         ) : (
-          <Line data={getLineChartData()} options={lineOptions} />
+          <Line data={lineChartData} options={lineOptions} />
         )}
       </div>
     </main>
